@@ -3,7 +3,6 @@ package com.scalaric.christmas.tree.model
 import cats.Show
 import cats.implicits._
 
-
 case class TreeRow(star: Star, spaces: Int, stars: Int)
 
 object TreeRow {

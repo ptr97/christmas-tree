@@ -10,7 +10,7 @@ import com.scalaric.christmas.tree.model.ChristmasTree
 import scala.language.postfixOps
 
 
-trait ChristmasTreeService {
+trait ChristmasService {
 
   def createChristmasTree: Kleisli[IO, Config, ChristmasTree] = Kleisli { config =>
     IO { ChristmasTree(config.treeSize, config.treeChar) }
@@ -21,8 +21,8 @@ trait ChristmasTreeService {
   }
 
   def showChristmasTree(colorConsoleIO: ColorConsoleIO, christmasTree: ChristmasTree): Kleisli[IO, Config, Unit] = Kleisli { config =>
-    val treeChars = christmasTree.show
-    val printActions = treeChars.map { showChristmasTreeChar(_, colorConsoleIO, config.treeChar, config.waitMillis) }.toList
+    val showChar = showChristmasTreeChar(_, colorConsoleIO, config.treeChar, config.waitMillis)
+    val printActions = christmasTree.show.map(showChar).toList
     printActions.sequence.map { _ => () }
   }
 
@@ -35,4 +35,4 @@ trait ChristmasTreeService {
   }
 }
 
-object ChristmasTreeService extends ChristmasTreeService
+object ChristmasService extends ChristmasService
