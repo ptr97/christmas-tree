@@ -20,7 +20,7 @@ class ColorConsoleIO(withColors: List[String]) extends ColorConsole[IO] {
 
 object ColorConsoleIO {
   def apply(config: Config): ColorConsoleIO = {
-    val colors: List[Color] = config.colorsWithProbability.foldLeft(List.empty[Color]) { case (acc, (color, prob)) =>
+    val colors = config.colorsWithProbability.foldLeft(List.empty[Color]) { case (acc, (color, prob)) =>
       List.fill(prob)(color) ::: acc
     }
     new ColorConsoleIO(colors)
