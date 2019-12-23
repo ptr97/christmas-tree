@@ -1,8 +1,10 @@
 package com.scalaric.christmas.tree.service
 
+import cats.data.Kleisli
 import cats.effect.IO
 import cats.implicits._
 import com.scalaric.christmas.ColorConsoleIO
+import com.scalaric.christmas.tree.Config
 import com.scalaric.christmas.tree.model.ChristmasTree
 
 import scala.language.postfixOps
@@ -10,19 +12,26 @@ import scala.language.postfixOps
 
 trait ChristmasTreeService {
 
-  private def showChristmasTreeChar(c: Char, treeChar: String, waitMillis: Int): IO[Unit] = {
-    for {
-      _ <- ColorConsoleIO.changeColor
-      _ <- ColorConsoleIO.printChar(c)
-      _ <- if (c.toString === treeChar) ColorConsoleIO.waitFor(waitMillis) else IO.pure()
-    } yield ()
+  def createChristmasTree: Kleisli[IO, Config, ChristmasTree] = Kleisli { config =>
+    IO { ChristmasTree(config.treeSize, config.treeChar) }
   }
 
-  def showChristmasTree(christmasTree: ChristmasTree, waitMillis: Int): IO[Unit] = {
-    val chars: String = christmasTree.show
-    val list: List[IO[Unit]] = chars map { c: Char => showChristmasTreeChar(c, christmasTree.treeChar, waitMillis) } toList
+  def createColorConsole: Kleisli[IO, Config, ColorConsoleIO] = Kleisli { config =>
+    IO { ColorConsoleIO(config) }
+  }
 
-    list.sequence.map { _ => ()}
+  def showChristmasTree(colorConsoleIO: ColorConsoleIO, christmasTree: ChristmasTree): Kleisli[IO, Config, Unit] = Kleisli { config =>
+    val treeChars = christmasTree.show
+    val printActions = treeChars.map { showChristmasTreeChar(_, colorConsoleIO, config.treeChar, config.waitMillis) }.toList
+    printActions.sequence.map { _ => () }
+  }
+
+  private def showChristmasTreeChar(c: Char, colorConsoleIO: ColorConsoleIO, treeChar: String, waitMillis: Int): IO[Unit] = {
+    for {
+      _ <- colorConsoleIO.changeColor
+      _ <- colorConsoleIO.printChar(c)
+      _ <- if (c.toString === treeChar) colorConsoleIO.waitFor(waitMillis) else IO.pure()
+    } yield ()
   }
 }
 

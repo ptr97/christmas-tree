@@ -1,20 +1,20 @@
 package com.scalaric.christmas
 
-import com.scalaric.christmas.tree.model.ChristmasTree
+import cats.data.Kleisli
+import cats.effect.IO
+import com.scalaric.christmas.tree.Config
+import com.scalaric.christmas.tree.ScalaricChristmasConfig
 import com.scalaric.christmas.tree.service.ChristmasTreeService
-
-import scala.language.postfixOps
 
 
 object Main extends App {
-  private val treeSize = 28
-  private val treeChar = "*"
-  private val waitMillis = 70
 
+  val program: Kleisli[IO, Config, Unit] = for {
+    colorConsole <- ChristmasTreeService.createColorConsole
+    christmasTree <- ChristmasTreeService.createChristmasTree
+    _ <- ChristmasTreeService.showChristmasTree(colorConsole, christmasTree)
+  } yield ()
 
-  val christmasTree = ChristmasTree(treeSize, treeChar)
-  val program = ChristmasTreeService.showChristmasTree(christmasTree, waitMillis)
-
-  program.unsafeRunSync()
+  program.run(ScalaricChristmasConfig).unsafeRunSync()
 }
 
