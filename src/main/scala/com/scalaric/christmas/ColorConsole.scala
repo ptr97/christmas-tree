@@ -1,11 +1,8 @@
 package com.scalaric.christmas
 
 import cats.effect.IO
-import com.scalaric.christmas.tree.Config
-import com.scalaric.christmas.tree.Config._
-
+import com.scalaric.christmas.Config.Color
 import scala.util.Random
-
 
 trait ColorConsole[F[_]] {
   def colors: List[Color]

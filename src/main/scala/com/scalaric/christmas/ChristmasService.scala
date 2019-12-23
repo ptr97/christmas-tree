@@ -1,14 +1,9 @@
-package com.scalaric.christmas.tree.service
+package com.scalaric.christmas
 
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.implicits._
-import com.scalaric.christmas.ColorConsoleIO
-import com.scalaric.christmas.tree.Config
-import com.scalaric.christmas.tree.model.ChristmasTree
-
 import scala.language.postfixOps
-
 
 trait ChristmasService {
 
@@ -26,13 +21,11 @@ trait ChristmasService {
     printActions.sequence.map { _ => () }
   }
 
-  private def showChristmasTreeChar(c: Char, colorConsoleIO: ColorConsoleIO, treeChar: String, waitMillis: Int): IO[Unit] = {
-    for {
-      _ <- colorConsoleIO.changeColor
-      _ <- colorConsoleIO.printChar(c)
-      _ <- if (c.toString === treeChar) colorConsoleIO.waitFor(waitMillis) else IO.pure()
-    } yield ()
-  }
+  private def showChristmasTreeChar(c: Char, colorConsoleIO: ColorConsoleIO, treeChar: String, waitMillis: Int): IO[Unit] = for {
+    _ <- colorConsoleIO.changeColor
+    _ <- colorConsoleIO.printChar(c)
+    _ <- if (c.toString === treeChar) colorConsoleIO.waitFor(waitMillis) else IO.pure()
+  } yield ()
 }
 
 object ChristmasService extends ChristmasService

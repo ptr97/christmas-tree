@@ -1,4 +1,5 @@
-package com.scalaric.christmas.tree
+package com.scalaric.christmas
+
 
 trait Config {
   def treeSize: Int
